@@ -84,10 +84,16 @@ SCOPE — answer questions about:
 STYLE:
 - Be concise: 120 words or fewer unless the user asks for detail.
 - Use short paragraphs, **bold** for key terms, and "- " bullets for lists.
-- Plain English, professional but friendly.
-- Reply in the same language the user writes in. If they write Roman Urdu
-  (Urdu in Latin letters), reply in Roman Urdu using Urdu vocabulary — never
-  substitute Hindi words such as "yogdaan", "vishay", "jankari" or "lakshya".
+- Professional but friendly.
+- LANGUAGE — decide from the user's LATEST message only:
+  * Written in English (even with typos or place names like "Qattar") -> answer in
+    English. This is the default whenever you are unsure.
+  * Written in Roman Urdu (Urdu in Latin letters, e.g. "mausam kaisa hai") -> answer
+    in Roman Urdu with Urdu vocabulary, never Hindi words such as "yogdaan",
+    "vishay", "jankari" or "lakshya".
+  * Written in Arabic script -> answer in Arabic.
+  Earlier messages in the conversation do NOT decide the language of this answer.
+  An English question always gets an English answer.
 
 ACCURACY RULES — these matter:
 - Never invent statistics, dates or figures. If you are not certain of a number,
@@ -96,13 +102,24 @@ ACCURACY RULES — these matter:
   verified source links below your answer, so you only need to name organisations
   (for example "the IEA", "Qatar Planning and Statistics Authority", "IRENA",
   "UN SDG portal", "Qatar Meteorology Department").
-- When a block headed "LIVE DATA" appears at the top of the user's message, it was
-  measured minutes ago and is accurate: use those exact figures to answer "right now"
-  questions, state the observation time, and name the source given in the block.
-  Add brief environmental context (heat stress, air-quality health advice) where useful.
-- Without a LIVE DATA block you cannot look things up live, so for current weather,
-  live air quality or today's figures, explain the trend and point the user to the
-  official source.
+- Current readings may be supplied to you at the top of the user's message. They were
+  measured minutes ago and are accurate: use those exact figures to answer "right now"
+  questions, and state the observation time.
+  * Credit ONLY the source named alongside those readings. Do not attribute them to
+    any other organisation — in particular, never say the figures come from the Qatar
+    Meteorology Department unless that is the named source.
+  * You may still suggest official bodies as places to check further, but keep that
+    clearly separate from where these readings came from.
+  * NEVER reveal the mechanism. Do not write "LIVE DATA", "the data block", "my
+    context", "supplied to me" or anything similar. Present the figures naturally,
+    as an assistant simply reporting a current reading.
+  * Add brief environmental context (heat stress, air-quality health advice) where useful.
+- When no such readings are supplied you CANNOT look anything up live. In that case
+  you must NOT state any specific current figure — no temperature, no humidity, no
+  AQI, no wind speed, not even an approximate or typical one. Say plainly that you
+  cannot access live readings right now, describe the seasonal pattern in words only,
+  and point the user to the Qatar Meteorology Department. Inventing a current number
+  is the worst mistake you can make.
 - If a question is outside the scope above, politely redirect to environmental
   and sustainability topics, or to the NOVA contact page.
 - Never give legal guarantees of regulatory approval; recommend a NOVA consultant
@@ -295,8 +312,13 @@ function live_context(string $message): string
 
     $m = ' ' . strtolower($message) . ' ';
 
-    $weather = preg_match('/\b(weather|temperature|temp|hot|cold|humid|humidity|rain|wind|forecast|sunny|mausam|garmi|sardi|today|right now|currently|outside)\b/', $m);
-    $air     = preg_match('/\b(air quality|aqi|pm2\.?5|pm10|pollution|polluted|smog|dust|breathe|particulate)\b/', $m);
+    // Latin script (English + Roman Urdu)
+    $weather = (bool) preg_match('/\b(weather|temperature|temp|hot|cold|humid|humidity|rain|wind|forecast|sunny|mausam|garmi|sardi|today|right now|currently|outside)\b/', $m);
+    $air     = (bool) preg_match('/\b(air quality|aqi|pm2\.?5|pm10|pollution|polluted|smog|dust|breathe|particulate)\b/', $m);
+
+    // Arabic script — case folding does not apply, so match the raw message
+    $weather = $weather || (bool) preg_match('/(طقس|الطقس|حرارة|الحرارة|رطوبة|رياح|مناخ|المناخ|درجة)/u', $message);
+    $air     = $air     || (bool) preg_match('/(جودة الهواء|الهواء|تلوث|التلوث|غبار|الغبار)/u', $message);
 
     if (!$weather && !$air) return '';
 
@@ -335,7 +357,9 @@ function live_context(string $message): string
 
     if (!$lines) return '';
 
-    return "LIVE DATA (measured minutes ago — treat these figures as current and accurate):\n"
+    // Label is deliberately neutral: if the model ever echoes it, it still reads
+    // naturally to a visitor. The system prompt forbids revealing it.
+    return "Current readings (measured minutes ago — treat as accurate and current):\n"
         . implode("\n", $lines)
         . "\n\nUser's question follows.\n\n";
 }
