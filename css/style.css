@@ -1713,3 +1713,553 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 1;
   visibility: visible;
 }
+
+/* ============================================
+   NOVA AI Assistant Widget
+   ============================================ */
+
+/* Keep the scroll-to-top button clear of the assistant launcher */
+.scroll-top {
+  bottom: 96px;
+}
+
+/* --- Launcher pill --- */
+.nova-ai-launcher {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px 13px 18px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(11, 61, 46, 0.32);
+  transition: transform var(--transition), box-shadow var(--transition), opacity 0.25s ease;
+  z-index: 1000;
+}
+
+.nova-ai-launcher:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 38px rgba(11, 61, 46, 0.42);
+}
+
+.nova-ai-launcher:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.nova-ai-launcher svg {
+  width: 20px;
+  height: 20px;
+  color: var(--accent-light);
+  flex-shrink: 0;
+}
+
+.nova-ai-launcher.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px) scale(0.92);
+}
+
+/* Attention ping */
+.nova-ai-launcher::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 rgba(200, 164, 78, 0.7);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.nova-ai-launcher.ping::after {
+  opacity: 1;
+  animation: novaAiPing 2s ease-out infinite;
+}
+
+@keyframes novaAiPing {
+  0%   { box-shadow: 0 0 0 0 rgba(200, 164, 78, 0.7); }
+  70%  { box-shadow: 0 0 0 12px rgba(200, 164, 78, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(200, 164, 78, 0); }
+}
+
+/* --- Teaser bubble --- */
+.nova-ai-teaser {
+  position: fixed;
+  bottom: 158px;
+  right: 30px;
+  max-width: 250px;
+  background: var(--bg-white);
+  color: var(--text-body);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  box-shadow: var(--shadow-lg);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all var(--transition);
+}
+
+.nova-ai-teaser.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.nova-ai-teaser strong {
+  display: block;
+  color: var(--primary);
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.nova-ai-teaser-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+/* --- Panel --- */
+.nova-ai-panel {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 400px;
+  max-width: calc(100vw - 32px);
+  height: 620px;
+  max-height: calc(100vh - 60px);
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1001;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px) scale(0.97);
+  transform-origin: bottom right;
+  transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
+}
+
+.nova-ai-panel.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+/* Header */
+.nova-ai-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.nova-ai-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nova-ai-avatar svg {
+  width: 20px;
+  height: 20px;
+  color: var(--accent-light);
+}
+
+.nova-ai-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.nova-ai-header-text h4 {
+  font-size: 0.97rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.nova-ai-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 1px;
+}
+
+.nova-ai-status i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  display: inline-block;
+}
+
+.nova-ai-close {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition);
+  flex-shrink: 0;
+}
+
+.nova-ai-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.nova-ai-close svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Body */
+.nova-ai-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px;
+  background: var(--bg-light);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scrollbar-width: thin;
+}
+
+.nova-ai-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.nova-ai-body::-webkit-scrollbar-thumb {
+  background: #cfd8d2;
+  border-radius: 3px;
+}
+
+/* Messages */
+.nova-ai-msg {
+  display: flex;
+  max-width: 100%;
+}
+
+.nova-ai-msg.user {
+  justify-content: flex-end;
+}
+
+.nova-ai-bubble {
+  max-width: 86%;
+  padding: 12px 15px;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+.nova-ai-msg.bot .nova-ai-bubble {
+  background: var(--bg-white);
+  color: var(--text-body);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 5px;
+  box-shadow: var(--shadow-sm);
+}
+
+.nova-ai-msg.user .nova-ai-bubble {
+  background: var(--primary);
+  color: #fff;
+  border-bottom-right-radius: 5px;
+}
+
+.nova-ai-bubble p {
+  margin: 0 0 8px;
+}
+
+.nova-ai-bubble p:last-child {
+  margin-bottom: 0;
+}
+
+.nova-ai-bubble strong {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.nova-ai-msg.user .nova-ai-bubble strong {
+  color: #fff;
+}
+
+.nova-ai-bubble ul {
+  margin: 6px 0 8px;
+  padding-left: 18px;
+}
+
+.nova-ai-bubble li {
+  margin-bottom: 4px;
+}
+
+/* Resource links inside an answer */
+.nova-ai-links {
+  margin-top: 11px;
+  padding-top: 11px;
+  border-top: 1px dashed var(--border);
+}
+
+.nova-ai-links-title {
+  font-size: 0.69rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 7px;
+}
+
+.nova-ai-link {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 9px;
+  margin-bottom: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-light);
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.4;
+  transition: background var(--transition), transform var(--transition);
+}
+
+.nova-ai-link:hover {
+  background: rgba(27, 107, 74, 0.1);
+  transform: translateX(2px);
+}
+
+.nova-ai-link svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  color: var(--secondary);
+}
+
+/* Suggestion chips */
+.nova-ai-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 2px;
+}
+
+.nova-ai-chip {
+  padding: 7px 13px;
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--primary);
+  font-family: var(--font-main);
+  font-size: 0.775rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.nova-ai-chip:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* Typing indicator */
+.nova-ai-typing {
+  display: flex;
+  gap: 4px;
+  padding: 14px 16px;
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  border-bottom-left-radius: 5px;
+  width: fit-content;
+}
+
+.nova-ai-typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--secondary);
+  opacity: 0.4;
+  animation: novaAiBlink 1.3s infinite ease-in-out;
+}
+
+.nova-ai-typing span:nth-child(2) { animation-delay: 0.18s; }
+.nova-ai-typing span:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes novaAiBlink {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30%           { opacity: 1;   transform: translateY(-4px); }
+}
+
+/* Footer */
+.nova-ai-footer {
+  padding: 12px 14px 10px;
+  background: var(--bg-white);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.nova-ai-input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.nova-ai-input {
+  flex: 1;
+  resize: none;
+  max-height: 110px;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-main);
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--text-dark);
+  background: var(--bg-light);
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.nova-ai-input:focus {
+  outline: none;
+  border-color: var(--secondary);
+  background: var(--bg-white);
+}
+
+.nova-ai-input::placeholder {
+  color: var(--text-muted);
+}
+
+.nova-ai-send {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--secondary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+}
+
+.nova-ai-send:hover:not(:disabled) {
+  background: var(--primary);
+  transform: translateY(-1px);
+}
+
+.nova-ai-send:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.nova-ai-send svg {
+  width: 18px;
+  height: 18px;
+}
+
+.nova-ai-disclaimer {
+  margin-top: 8px;
+  font-size: 0.68rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.nova-ai-disclaimer a {
+  color: var(--secondary);
+  font-weight: 600;
+}
+
+/* --- Responsive --- */
+@media (max-width: 600px) {
+  .nova-ai-panel {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    transform-origin: bottom center;
+  }
+
+  .nova-ai-launcher {
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 18px 12px 15px;
+    font-size: 0.84rem;
+  }
+
+  .nova-ai-teaser {
+    bottom: 140px;
+    right: 20px;
+    max-width: calc(100vw - 40px);
+  }
+
+  .scroll-top {
+    bottom: 80px;
+    right: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nova-ai-panel,
+  .nova-ai-launcher,
+  .nova-ai-teaser {
+    transition: none;
+  }
+
+  .nova-ai-launcher.ping::after,
+  .nova-ai-typing span {
+    animation: none;
+  }
+}

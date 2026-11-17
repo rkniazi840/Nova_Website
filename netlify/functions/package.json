@@ -1,0 +1,5 @@
+{
+  "name": "nova-netlify-functions",
+  "private": true,
+  "type": "commonjs"
+}
