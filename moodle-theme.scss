@@ -1,0 +1,108 @@
+/* ============================================================
+   NOVA LMS — Boost theme branding
+   Paste into: Site administration → Appearance → Themes → Boost
+   https://lms.novaenvironmentaldoha.com/admin/settings.php?section=themesettingboost
+
+   The file is split into the two fields Boost provides. Paste each
+   block into its own field — they are not interchangeable.
+   Palette matches css/style.css on the main website.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   FIELD 1 — "Raw initial SCSS"
+   Loads BEFORE Bootstrap, so it overrides Bootstrap's variables.
+   ------------------------------------------------------------ */
+
+$primary:    #0B3D2E;   // dark green  — buttons, links, headings
+$secondary:  #1B6B4A;   // mid green
+$success:    #1B6B4A;
+$info:       #14573F;
+$warning:    #C8A44E;   // gold accent
+$body-color: #4A4A4A;
+$body-bg:    #FFFFFF;
+
+$font-family-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+$border-radius:    6px;
+$border-radius-lg: 12px;
+$headings-font-weight: 700;
+
+
+/* ------------------------------------------------------------
+   FIELD 2 — "Raw SCSS"
+   Loads AFTER Bootstrap, for anything the variables cannot reach.
+   ------------------------------------------------------------ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* Gold rule under the navbar, as on the main site */
+.navbar {
+    border-bottom: 3px solid #C8A44E;
+}
+
+/* Links */
+a {
+    color: #14573F;
+}
+a:hover,
+a:focus {
+    color: #0B3D2E;
+}
+
+/* Primary buttons */
+.btn-primary {
+    background-color: #0B3D2E;
+    border-color: #0B3D2E;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: #14573F;
+    border-color: #14573F;
+}
+
+/* Secondary / outline buttons */
+.btn-secondary {
+    color: #0B3D2E;
+    border-color: #0B3D2E;
+    background-color: transparent;
+}
+.btn-secondary:hover {
+    background-color: #0B3D2E;
+    border-color: #0B3D2E;
+    color: #fff;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    color: #0B3D2E;
+}
+
+/* Login page — gold top edge on the card */
+#page-login-index .card,
+.login-container {
+    border-top: 4px solid #C8A44E;
+}
+
+/* Cards and course boxes */
+.card {
+    border-radius: 12px;
+}
+
+/* Course progress bar in brand green */
+.progress-bar {
+    background-color: #1B6B4A;
+}
+
+/* Activity completion ticks */
+.completion-dropdown .badge-success,
+.badge-success {
+    background-color: #1B6B4A !important;
+}
+
+/* Site footer */
+#page-footer {
+    border-top: 3px solid #C8A44E;
+}

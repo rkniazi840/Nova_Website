@@ -119,6 +119,31 @@ Manager is the slow, failure-prone alternative — avoid it.
 
 > Set `moodledata` back to `755` once the install finishes.
 
+### 1.4a moodledata — the installer puts it inside `public_html`
+
+Creating `~/domains/novaenvironmentaldoha.com/moodledata` beforehand is not enough.
+The web installer ignores it and defaults to:
+```
+/home/u249715049/domains/novaenvironmentaldoha.com/public_html/moodledata
+```
+which is **inside the web root**. Moodle drops a `deny from all` `.htaccess` there,
+so files are not served — but that single file is the only thing standing between
+learners' submitted assignments and the open web.
+
+Check after installing, and move it if needed:
+```bash
+cd ~/domains/novaenvironmentaldoha.com
+rmdir moodledata 2>/dev/null
+mv public_html/moodledata ./moodledata
+sed -i "s#public_html/moodledata#moodledata#" public_html/lms/config.php
+rm -rf moodledata/localcache/* moodledata/cache/* moodledata/temp/*
+grep -n dataroot public_html/lms/config.php
+```
+
+Clearing `localcache`, `cache` and `temp` matters — they hold absolute paths from
+the old location. Confirm afterwards that `https://www.novaenvironmentaldoha.com/moodledata/`
+returns **404**, not 403: 403 means it is still there, merely blocked.
+
 ### 1.5 Database — use `localhost`, and ignore the shell client
 hPanel → **Databases → + Add database**. Set the password **in the creation form**;
 the separate *Change password* action silently failed every time it was tried.
@@ -161,13 +186,27 @@ the subdomain being created. Do not press *Cancel* while the status reads
 *Installing*. Confirm `https://` loads before creating any accounts.
 
 ### 1.8 Cron
-hPanel → **Advanced → Cron Jobs**, every 5 minutes. Note the `public/` segment:
+hPanel → **Advanced → Cron Jobs**, mode **PHP**. The command field is prefixed with
+`/usr/bin/php /home/u249715049/`, so enter only the remainder — note the `public/`
+segment, which is easy to miss:
 ```
-/usr/bin/php /home/u249715049/domains/novaenvironmentaldoha.com/public_html/lms/public/admin/cli/cron.php
+domains/novaenvironmentaldoha.com/public_html/lms/public/admin/cli/cron.php
 ```
 
-> Without cron: no email notifications, no completion recalculation, no submission
-> receipts. OTHM will notice.
+**Schedule: `0,30 * * * *`** (every 30 minutes). Hostinger's *Common Options* list
+offers nothing more frequent than *Twice an hour* on this plan — there is no
+5-minute or 1-minute preset.
+
+> Pick the Common Option **before** touching the Minute/Hour dropdowns, then check
+> the row in *List of Cron Jobs* before trusting it. A stale `Hour` value survives
+> the preset and silently turns the schedule into *twice a day* (`0,30 5 * * *`).
+
+Moodle prefers cron every minute. Thirty minutes is fine for centre approval —
+notifications and submission receipts are simply delayed by up to half an hour.
+Moving to a VPS later would allow a one-minute schedule.
+
+> Without cron at all: no email notifications, no completion recalculation, no
+> submission receipts. OTHM will notice.
 
 ### 1.9 Housekeeping
 `public_html/nova-site-v2.zip` is publicly downloadable and exposes the whole
