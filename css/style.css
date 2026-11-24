@@ -316,6 +316,22 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600 !important;
 }
 
+/* Tighten the desktop nav between the tablet and desktop breakpoints,
+   where all eight links must still fit on one line. */
+@media (min-width: 769px) and (max-width: 1150px) {
+  .nav-links {
+    gap: 20px;
+  }
+
+  .nav-links a {
+    font-size: 0.84rem;
+  }
+
+  .nav-cta {
+    padding: 9px 18px !important;
+  }
+}
+
 .nav-cta::after {
   display: none !important;
 }
