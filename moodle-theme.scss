@@ -34,7 +34,11 @@ $headings-font-weight: 700;
    Loads AFTER Bootstrap, for anything the variables cannot reach.
    ------------------------------------------------------------ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+/* NOTE: do NOT put `@import url(...)` here. Moodle's SCSS compiler treats it as
+   a file import, fails to find it, and silently falls back to Boost's prebuilt
+   CSS — which throws away every setting on this page. The Inter webfont is
+   loaded instead from Site administration → Appearance → Additional HTML
+   → "Within HEAD" (setting name: additionalhtmlhead). */
 
 /* Gold rule under the navbar, as on the main site */
 .navbar {

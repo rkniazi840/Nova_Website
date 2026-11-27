@@ -228,6 +228,56 @@ website source. Delete it.
 Send a test email before going further — submission receipts and feedback
 notifications depend on it.
 
+### 2.1 Branding  ✅ COMPLETE (27 Nov 2026)
+
+Applied via CLI, not the settings form — the form proved unreliable here:
+
+```bash
+cd ~/domains/novaenvironmentaldoha.com/public_html/lms
+php admin/cli/cfg.php --component=theme_boost --name=brandcolor --set='#0B3D2E'
+php admin/cli/cfg.php --component=theme_boost --name=scsspre --set="$(cat ~/nova-scsspre.scss)"
+php admin/cli/cfg.php --component=theme_boost --name=scss     --set="$(cat ~/nova-scss.scss)"
+```
+
+Logos were uploaded through the web UI at `/admin/settings.php?section=logos`
+(`images/nova-logo.png` and `images/nova-logo-compact.png`).
+
+**Three traps, all of which cost time:**
+
+1. **Never put `@import url(...)` in Raw SCSS.** Moodle's SCSS compiler treats it
+   as a *file* import, fails to find it, and then — this is the damaging part —
+   swallows the error with `debugging()` and silently serves Boost's prebuilt
+   `theme/boost/style/moodle.css` instead. The site simply stays default blue
+   with no error anywhere. The Inter webfont is loaded instead from
+   Site admin → Appearance → Additional HTML → "Within HEAD"
+   (`additionalhtmlhead`), as a `<link>` tag.
+
+2. **Rebuild the theme CSS from the CLI after every cache purge.** The web
+   request cannot complete the SCSS compile on this shared hosting and falls
+   back to the prebuilt blue CSS, which then gets cached. Always run both
+   together, and do not open the site in between:
+   ```bash
+   php admin/cli/purge_caches.php && php admin/cli/build_theme_css.php --themes=boost
+   ```
+   Verify: the built file under
+   `moodledata/localcache/theme/<rev>/boost/css/all_*.css` should be ~1,349,500
+   bytes and contain `0B3D2E`. The ~1,367,800-byte version is the unbranded
+   fallback.
+
+3. **To see why a theme change did nothing**, turn debugging on temporarily —
+   the SCSS error is invisible otherwise:
+   ```bash
+   php admin/cli/cfg.php --name=debug --set=32767
+   php admin/cli/cfg.php --name=debugdisplay --set=1
+   # ... reproduce ...
+   php admin/cli/cfg.php --name=debugdisplay --set=0
+   php admin/cli/cfg.php --name=debug --set=0
+   ```
+
+Known cosmetic gap: Boost 5.3 sets `.navbar{display:none}`, so the gold rule
+under the navbar does not render. The other gold accents (login card, footer)
+do.
+
 ---
 
 ## Phase 3 — Course blueprint
