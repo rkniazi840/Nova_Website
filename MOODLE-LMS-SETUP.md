@@ -322,6 +322,50 @@ php admin/cli/cfg.php --name=debug --set=0
 
 ---
 
+### 2.3 Front page and guest access  ✅ COMPLETE (27 Nov 2026)
+
+```bash
+php admin/cli/cfg.php --name=forcelogin       --set=0
+php admin/cli/cfg.php --name=enablemyhome     --set=1
+php admin/cli/cfg.php --name=defaulthomepage  --set=0     # 0 = Site home, 1 = Dashboard
+php admin/cli/cfg.php --name=guestloginbutton --set=1
+php admin/cli/cfg.php --name=autologinguests  --set=1
+php admin/cli/cfg.php --name=frontpage         --set='0,6,7'
+php admin/cli/cfg.php --name=frontpageloggedin --set='0,5,6'
+```
+
+Getting an anonymous visitor onto the course took four settings, not one.
+`forcelogin=0` on its own does nothing, because `public/index.php` also
+redirects every logged-out visitor to the login page whenever **the Dashboard
+is disabled** (`enablemyhome=0`) — regardless of `forcelogin`. Both
+`enablemyhome=1` and `defaulthomepage=0` are needed before the site home page
+is reachable at all.
+
+`autologinguests=1` is what makes OTHM's request literally work: a visitor
+lands on the course without being asked to log in or to click "Log in as
+guest". `guestloginbutton=1` keeps the explicit button as well.
+
+Front page block codes are easy to get backwards:
+
+| Code | Meaning |
+|---|---|
+| 0 | News items |
+| 2 | Category names |
+| 4 | Category combo |
+| **5** | **Enrolled** courses |
+| **6** | **All** courses |
+| 7 | Course search box |
+
+So the logged-out front page uses `0,6,7` and the logged-in one `0,5,6`.
+Setting `5` for logged-out visitors shows an empty list, since they have no
+enrolments.
+
+> Guest access still cannot submit work, see feedback, see grades, or have
+> completion tracked. It covers OTHM points 1, 2 and 6 only. Points 3, 4 and 5
+> need the `demo.learner` account.
+
+---
+
 ## Phase 3 — Course blueprint
 
 Build **one complete unit** properly rather than several empty ones. OTHM is
