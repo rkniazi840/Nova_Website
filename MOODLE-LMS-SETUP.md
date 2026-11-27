@@ -280,6 +280,48 @@ do.
 
 ---
 
+### 2.2 Outgoing mail (SMTP)  ✅ COMPLETE (27 Nov 2026)
+
+Working settings (Site admin → Server → Email → Outgoing mail configuration):
+
+| Setting | Value |
+|---|---|
+| `smtphosts` | `smtp.hostinger.com:465` |
+| `smtpsecure` | `ssl` |
+| `smtpauthtype` | `LOGIN` |
+| `smtpuser` | `noreply@novaenvironmentaldoha.com` |
+| `noreplyaddress` | `noreply@novaenvironmentaldoha.com` |
+
+Two faults caused the "Your site couldn't communicate with your mail server"
+error, and neither was visible in the web form:
+
+1. **A trailing space in `smtphosts`** (`smtp.hostinger.com:465 `). Moodle takes
+   it as part of the hostname and the connection fails. `php admin/cli/cfg.php`
+   is the only place this shows up.
+2. **`noreplyaddress` pointed at a mailbox that does not exist**
+   (`noreply@lms.…` instead of `noreply@…`). Hostinger's SMTP refuses to send
+   from any address other than the authenticated mailbox. This is why a raw
+   `curl smtps://…` test succeeded while Moodle failed — curl used the real
+   address.
+
+Test from the CLI rather than the web form, which hides the reason:
+
+```bash
+php admin/cli/cfg.php --name=debug --set=32767
+php admin/cli/cfg.php --name=debugdisplay --set=1
+php -r 'define("CLI_SCRIPT",true); require("config.php");
+  $u = $DB->get_record("user", ["username"=>"rk.niazi840"]);
+  var_dump(email_to_user($u, core_user::get_noreply_user(), "test", "body"));'
+php admin/cli/cfg.php --name=debugdisplay --set=0
+php admin/cli/cfg.php --name=debug --set=0
+```
+
+> **To do:** the mailbox password has appeared in terminal output and shell
+> history. Rotate it in hPanel → Emails, set the new one with
+> `php admin/cli/cfg.php --name=smtppass --set='…'`, then clear the history.
+
+---
+
 ## Phase 3 — Course blueprint
 
 Build **one complete unit** properly rather than several empty ones. OTHM is
